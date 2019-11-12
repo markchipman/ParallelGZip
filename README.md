@@ -1,2 +1,2 @@
-# ParallelGZip
-The parallel GZip implementation
+# Parallel GZip
+The parallel GZip implementation.
