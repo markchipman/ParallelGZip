@@ -33,6 +33,8 @@ namespace GZipTest.Threading
         /// <param name="workerCount">The worker count.</param>
         /// <param name="taskQueue">The task queue being shared among threads. It's used to keep producer's results.</param>
         /// <param name="dequeueAction">The dequeue action which will be executed when the thread dequeues an item from the task queue.</param>
+        /// <exception cref="ArgumentNullException">One of the arguments is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The worker count must be greater than zero.</exception>
         public MultiThreadsWorker(
             int workerCount,
             IQueue<T> taskQueue,
@@ -46,20 +48,25 @@ namespace GZipTest.Threading
         /// </summary>
         /// <param name="workerCount">The worker count.</param>
         /// <param name="taskQueue">The task queue being shared among threads. It's used to keep producer's results.</param>
-        /// <param name="dequeueRule">
-        /// The rule defining strategy how threads dequeue items from the queue.
-        /// It allows to configure the dequeue algorithm.</param>
-        /// <param name="dequeueAction">
-        /// The dequeue action which will be executed when threads dequeue an item from the task queue.</param>
+        /// <param name="dequeueRule">The rule defining strategy how threads dequeue items from the queue.
+        /// It allows to configure the dequeue algorithm for a non standard queue implementation.
+        /// Have to be always 'TRUE result delegate' for the usual queue algorithm.</param>
+        /// <param name="dequeueAction">The dequeue action which will be executed when threads dequeue an item from the task queue.</param>
+        /// <exception cref="ArgumentNullException">One of the arguments is actually null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The worker count must be greater than zero.</exception>
         public MultiThreadsWorker(
             int workerCount,
             IQueue<T> taskQueue,
             Func<T, bool> dequeueRule,
             Action<T> dequeueAction)
         {
-            _taskQueue = taskQueue;
-            _dequeueAction = dequeueAction;
-            _dequeueRule = dequeueRule;
+            _taskQueue = taskQueue ?? throw new ArgumentNullException(nameof(taskQueue));
+            _dequeueAction = dequeueAction ?? throw new ArgumentNullException(nameof(dequeueAction));
+            _dequeueRule = dequeueRule ?? throw new ArgumentNullException(nameof(dequeueRule));
+            
+            if (workerCount <= 0)
+                throw new ArgumentOutOfRangeException(nameof(workerCount), "Value must be greater than zero.");
+            
             _workers = new List<Thread>(workerCount);
             
             // Create and start a separate thread for each worker
@@ -161,6 +168,7 @@ namespace GZipTest.Threading
         public void Dispose()
         {
             Wait();
+            _workers.Clear();
         }
     }
 }

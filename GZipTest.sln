@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GZipTest", "src\GZipTest.csproj", "{FEC5D4F8-7208-442A-91A0-C2D3C01AA11A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GZIpTest.Tests", "tests\GZIpTest.Tests.csproj", "{2F2D88EB-5E99-4784-A7BD-2E041C89656F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{FEC5D4F8-7208-442A-91A0-C2D3C01AA11A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEC5D4F8-7208-442A-91A0-C2D3C01AA11A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEC5D4F8-7208-442A-91A0-C2D3C01AA11A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F2D88EB-5E99-4784-A7BD-2E041C89656F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F2D88EB-5E99-4784-A7BD-2E041C89656F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F2D88EB-5E99-4784-A7BD-2E041C89656F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2D88EB-5E99-4784-A7BD-2E041C89656F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

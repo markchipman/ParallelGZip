@@ -34,15 +34,23 @@ namespace GZipTest.Extensions
         /// </summary>
         /// <param name="source">The source stream.</param>
         /// <param name="blockSize">The data block size.</param>
-        /// <returns>A tuple containing the total count of read bytes + the read sequence of bytes</returns>
+        /// <returns>A tuple containing the total count of read bytes + the read sequence of bytes.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The block size can't be equal or less than zero.</exception>
         public static (int, byte[]) ReadBlock(this Stream source, int blockSize)
         {
+            if (blockSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(blockSize), "The block size can't be equal or less than zero.");
+            
             Span<byte> buffer = new byte[blockSize];
             var bytesRead = source.Read(buffer);
             if (bytesRead > 0)
             {
                 if (bytesRead < blockSize)
                     buffer = buffer.Slice(0, bytesRead);
+            }
+            else
+            {
+                buffer = Span<byte>.Empty;
             }
 
             return (bytesRead, buffer.ToArray());

@@ -26,6 +26,9 @@ namespace GZipTest.GZip
             if (destination == null)
                 throw new ArgumentNullException(nameof(destination), "Destination stream is null");
 
+            if (readBlockSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(readBlockSize), "The read block size can't be less than zero.");
+            
             var compressor = new GZipCompressor(source, destination, readBlockSize);
             compressor.Run();
         }

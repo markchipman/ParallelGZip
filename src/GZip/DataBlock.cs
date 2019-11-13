@@ -22,9 +22,14 @@ namespace GZipTest.GZip
         /// </summary>
         /// <param name="data">The block data.</param>
         /// <param name="position">The block position in a file.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The position must be equal or greater than zero.</exception>
+        /// <exception cref="ArgumentNullException">The data array mustn't be null.</exception>
         public DataBlock(byte[] data, int position)
         {
-            Data = data;
+            if (position < 0)
+                throw new ArgumentOutOfRangeException(nameof(position), "The position must be equal or greater than zero.");
+
+            Data = data ?? throw new ArgumentNullException(nameof(data));
             Position = position;
         }
 

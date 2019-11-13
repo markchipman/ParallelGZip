@@ -61,6 +61,10 @@ namespace GZipTest
             {
                 EnvironmentUtilities.ExitWithError(ex.InnerException.Message);
             }
+            catch (OutOfMemoryException)
+            {
+                EnvironmentUtilities.ExitWithError("Not enough memory to complete an operation.");
+            }
             catch (Exception ex)
             {
                 EnvironmentUtilities.ExitWithError(ex.Message);
