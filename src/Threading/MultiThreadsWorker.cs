@@ -24,7 +24,7 @@ namespace GZipTest.Threading
         
         private readonly object _locker = new object();
         
-        private bool _allDone;
+        private bool _isFinished;
         private Exception _exception;
         
         /// <summary>
@@ -102,10 +102,10 @@ namespace GZipTest.Threading
         public void Wait()
         {
             // exit, if we are already done (waited all operation)
-            if (_allDone)
+            if (_isFinished)
                 return;
             
-            _allDone = true;
+            _isFinished = true;
             
             // Enqueue one default task per worker to make each exit.
             _workers.ForEach(thread => DoWork(default));
