@@ -37,14 +37,6 @@ namespace GZipTest
                     }
                 }
             }
-            catch (NotSupportedException)
-            {
-                EnvironmentUtilities.ExitWithError("Path refers to the non-file device.");
-            }
-            catch (SecurityException)
-            {
-                EnvironmentUtilities.ExitWithError("The application doesn't have enough permission to complete the current operation.");
-            }
             catch (FileNotFoundException)
             {
                 EnvironmentUtilities.ExitWithError("The source file cannot be found.");
@@ -57,13 +49,21 @@ namespace GZipTest
             {
                 EnvironmentUtilities.ExitWithError("The specified path, file name or both exceed the system defined maximum length.");
             }
-            catch (AggregateException ex) when (ex.InnerException != null)
+            catch (NotSupportedException)
             {
-                EnvironmentUtilities.ExitWithError(ex.InnerException.Message);
+                EnvironmentUtilities.ExitWithError("Path refers to the non-file device.");
             }
+            catch (SecurityException)
+            {
+                EnvironmentUtilities.ExitWithError("The application doesn't have enough permission to complete the current operation.");
+            }  
             catch (OutOfMemoryException)
             {
                 EnvironmentUtilities.ExitWithError("Not enough memory to complete an operation.");
+            }
+            catch (AggregateException ex) when (ex.InnerException != null)
+            {
+                EnvironmentUtilities.ExitWithError(ex.InnerException.Message);
             }
             catch (Exception ex)
             {

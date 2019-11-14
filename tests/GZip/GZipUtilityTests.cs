@@ -34,43 +34,51 @@ namespace GZIpTest.Tests.GZip
             var decompressedFile = Path.GetTempFileName();
 
             // Act
-
-            // compress an original file
-            using (var source = new FileStream(origFile, FileMode.Open))
+            try
             {
-                using (var destination = new FileStream(gzFile, FileMode.Create))
+                // compress an original file
+                using (var source = new FileStream(origFile, FileMode.Open))
                 {
-                    GZipUtility.Compress(source, destination, blockSize);
+                    using (var destination = new FileStream(gzFile, FileMode.Create))
+                    {
+                        GZipUtility.Compress(source, destination, blockSize);
+                    }
+                }
+
+                // decompress the destination file
+                using (var source = new FileStream(gzFile, FileMode.Open))
+                {
+                    using (var destination = new FileStream(decompressedFile, FileMode.Create))
+                    {
+                        GZipUtility.Decompress(source, destination);
+                    }
+                }
+
+                // Assert
+                // as result, the both original and decompressed file have to be completely identical. 
+                var origFileInfo = new FileInfo(origFile);
+                var decompressedFileInfo = new FileInfo(decompressedFile);
+
+                Assert.Equal(origFileInfo.Length, decompressedFileInfo.Length);
+
+                using (var source = new FileStream(origFile, FileMode.Open))
+                {
+                    using (var destination = new FileStream(decompressedFile, FileMode.Open))
+                    {
+                        Assert.Equal(source.ReadByte(), destination.ReadByte());
+                    }
                 }
             }
-
-            // decompress the destination file
-            using (var source = new FileStream(gzFile, FileMode.Open))
+            catch
             {
-                using (var destination = new FileStream(decompressedFile, FileMode.Create))
-                {
-                    GZipUtility.Decompress(source, destination);
-                }
+                throw;
             }
-
-            // Assert
-            // as result, the both original and decompressed file have to be completely identical. 
-            var origFileInfo = new FileInfo(origFile);
-            var decompressedFileInfo = new FileInfo(decompressedFile);
-
-            Assert.Equal(origFileInfo.Length, decompressedFileInfo.Length);
-
-            using (var source = new FileStream(origFile, FileMode.Open))
+            finally
             {
-                using (var destination = new FileStream(decompressedFile, FileMode.Open))
-                {
-                    Assert.Equal(source.ReadByte(), destination.ReadByte());
-                }
+                File.Delete(origFile);
+                File.Delete(gzFile);
+                File.Delete(decompressedFile);
             }
-
-            File.Delete(origFile);
-            File.Delete(gzFile);
-            File.Delete(decompressedFile);
         }
     }
 }
