@@ -21,7 +21,7 @@ namespace GZIpTest.Tests.TestData
             
             yield return new object[] { 1024*1024, 1024, 1024 }; // 1Gb file, 1Kb - block size
             
-            yield return new object[] { 1024*1024, 1024 * 5, 1024 * 1024}; // 5Gb file, 1Mb - block size
+            yield return new object[] { 1024*1024, 1024 * 32, 1024 * 1024}; // 32Gb file, 1Mb - block size
 
             var bufferSize = DataGenerator.GenerateInt(1, 1024 * 1024);
             var repeatCount = DataGenerator.GenerateInt(1, 1024);

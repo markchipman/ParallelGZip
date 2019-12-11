@@ -25,7 +25,7 @@ namespace GZIpTest.Tests.Threading
                 result.Add(item);
             }
 
-            using (var worker = new MultiThreadsWorker<string>(workerCount, queue, DequeAction))
+            using (var worker = new MultiThreadsWorker<string>(workerCount, queue, DequeAction, 50))
             {
                 // Act
                 foreach (var item in items)
@@ -48,10 +48,10 @@ namespace GZIpTest.Tests.Threading
 
             // Act
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => new MultiThreadsWorker<string>(0, queue, x => { }));
-            Assert.Throws<ArgumentNullException>(() => new MultiThreadsWorker<string>(1, null, x => { }));
-            Assert.Throws<ArgumentNullException>(() => new MultiThreadsWorker<string>(1, queue, null));
-            Assert.Throws<ArgumentNullException>(() => new MultiThreadsWorker<string>(1, queue, null, x => { }));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new MultiThreadsWorker<string>(0, queue, x => { }, 50));
+            Assert.Throws<ArgumentNullException>(() => new MultiThreadsWorker<string>(1, null, x => { }, 50));
+            Assert.Throws<ArgumentNullException>(() => new MultiThreadsWorker<string>(1, queue, null, 50));
+            Assert.Throws<ArgumentNullException>(() => new MultiThreadsWorker<string>(1, queue, null, x => { }, 50));
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace GZIpTest.Tests.Threading
             {
                 var queue = new QueueAdapter<string>(new Queue<string>());
                 
-                using (var worker = new MultiThreadsWorker<string>(2, queue, x => throw new Exception()))
+                using (var worker = new MultiThreadsWorker<string>(2, queue, x => throw new Exception(), 50))
                 {
                     worker.DoWork(string.Empty);
                 }

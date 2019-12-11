@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime;
+using System.Threading;
 using GZipTest.Threading;
 using GZipTest.Threading.Queues;
 using GZipTest.Utilities;
@@ -16,6 +19,8 @@ namespace GZipTest.GZip.Transformers
     {
         private readonly Stream _source;
         private readonly Stream _destination;
+
+        private const int MemoryGateSizeInMb = 20;
         
         protected GZipTransformer(Stream source, Stream destination)
         {
@@ -30,7 +35,7 @@ namespace GZipTest.GZip.Transformers
         {
             // create an output writer as a single thread worker.
             var writeQueue = CreateWriteSynchronizationQueue();
-            using (var outputWriter = new MultiThreadsWorker<DataBlock>(1, writeQueue, IsWritable, block => WriteToDestination(block, _destination)))
+            using (var outputWriter = new MultiThreadsWorker<DataBlock>(1, writeQueue, IsWritable, block => WriteToDestination(block, _destination), MemoryGateSizeInMb))
             {
                 void TransformAndWrite(DataBlock block)
                 {
@@ -41,11 +46,27 @@ namespace GZipTest.GZip.Transformers
                 // create a parallel transformer
                 var compressionThreadsCount = EnvironmentUtilities.GetOptimalThreadsCount();
                 var readQueue = CreateReadSynchronizationQueue();
-                using (var transformer = new MultiThreadsWorker<DataBlock>(compressionThreadsCount, readQueue, TransformAndWrite))
+                using (var transformer = new MultiThreadsWorker<DataBlock>(compressionThreadsCount, readQueue, TransformAndWrite, MemoryGateSizeInMb))
                 {
-                    foreach (var block in ReadSource(_source))
+                    using (var en = ReadSource(_source).GetEnumerator())
                     {
-                        transformer.DoWork(block);
+                        var inProgress = en.MoveNext();
+                        while (inProgress)
+                        {
+                            try
+                            {
+                                using (new MemoryFailPoint(MemoryGateSizeInMb))
+                                {
+                                    var block = en.Current;
+                                    transformer.DoWork(block);
+                                    inProgress = en.MoveNext();
+                                }
+                            }
+                            catch (InsufficientMemoryException)
+                            {
+                                Thread.Sleep(2000);
+                            }
+                        }
                     }
                 }
             }
